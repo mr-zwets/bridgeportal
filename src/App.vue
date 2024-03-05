@@ -30,13 +30,26 @@
             </template>
           </v-select>
 
-          <div style="height: 200px;">
+          <div v-if="!walletConnected && selectedToken">
+            Connect your metamask wallet to proceed...
+          </div>
+          <div v-if="walletConnected && selectedToken" class="align-center">
+            <div class="mb-4">status: connected</div>
+            <p>First, send your NFTs to the SmartBCH burn address<br/>
+            <code>0x000000000000000000000000000000000000dead</code><br/>
+            to burn many NFTs at once, use 'bundle transfer' on 
+              <a target="_blank" :href="`https://app.withmantra.com/market/collection/${selectedToken.contract}?chain_id=10000`">Mantra</a>
+            </p>
+
             <p className="mt-4 montserrat">Input a CashTokens receiving address from 
               <a href="https://www.paytaca.com/" target="_blank" className="underline text-blau">Paytaca</a> ,
               <a href="https://zapit.io/" target="_blank" className="underline text-blau">Zapit</a>
               or <a href="https://cashonize.com/" target="_blank" className="underline text-blau">Cashonize</a> wallet:
             </p>
+            <v-text-field label="CashTokens Address" v-model="cashTokensAddr" style="width: 350px; margin: auto;"></v-text-field>
           </div>
+
+          <div style="height: 200px;"></div>
 
         </v-responsive>
       </v-container>
@@ -46,21 +59,11 @@
 
 <script setup lang="ts">
 import {ref} from "vue"
+import tokensBridge from "./assets/listTokensBridge.json"
+
 const selectedToken = ref("")
-const tokensBridge = [
-  {
-    name: 'Gambling Apes Club',
-    image: "/images/gambling-ape.png"
-  },
-  {
-    name: 'Spice NFT',
-    image: "/images/spice-nft.jpg"
-  },
-  {
-    name: 'Punk apes',
-    image: "/images/punk-ape.png"
-  }
-]
+const walletConnected= ref(false)
+const cashTokensAddr = ref("")
 </script>
 
 <style scoped>

@@ -3,7 +3,14 @@
     <v-main>
       <v-container class="fill-height">
         <v-responsive class="align-center text-center fill-height">
-          <h1 class="my-5">Bridge Portal</h1>
+          <h1 class="my-5 text-white">Bridge Portal</h1>
+          <hr style="color: white; width: 300px; margin: auto;"><br/>
+
+          <div className='my-4' class="swapItem">
+            <a href="https://smartbch.org/" target="_blank"><img src="/images/smartbch.png" alt="smartbch" className="smartbch" style="margin-top:0px"/></a>
+            ➔
+            <a href="https://bitcoincash.org/" target="_blank"><img src="/images/bitcoin-cash-logo-horizontal-wt.svg" alt="BCH" className="bch" style="margin-top:0px; margin-left: 10px;"/></a>
+          </div><br/>
 
           <label for="token">Choose which SmartBCH tokens to bridge:</label><br/>
           <v-select class="selectComponent" id="token" :items="tokensBridge" label="Token" v-model="selectedToken">
@@ -23,7 +30,13 @@
             </template>
           </v-select>
 
-          <div style="height: 200px;"></div>
+          <div style="height: 200px;">
+            <p className="mt-4 montserrat">Input a CashTokens receiving address from 
+              <a href="https://www.paytaca.com/" target="_blank" className="underline text-blau">Paytaca</a> ,
+              <a href="https://zapit.io/" target="_blank" className="underline text-blau">Zapit</a>
+              or <a href="https://cashonize.com/" target="_blank" className="underline text-blau">Cashonize</a> wallet:
+            </p>
+          </div>
 
         </v-responsive>
       </v-container>
@@ -37,20 +50,23 @@ const selectedToken = ref("")
 const tokensBridge = [
   {
     name: 'Gambling Apes Club',
-    image: "https://musing-johnson-a3bf7c.netlify.app/output/gac/images/5338.png"
+    image: "/images/gambling-ape.png"
   },
   {
     name: 'Spice NFT',
-    image: "https://images.spicenft.art/previews/2"
+    image: "/images/spice-nft.jpg"
   },
   {
     name: 'Punk apes',
-    image: "https://ipfs.punkapes.cash/ipfs/QmRgXJq2B81Goo4QyAJcVnQc4Ks9XY299B4FwRLTm5GCEb/90.png"
+    image: "/images/punk-ape.png"
   }
 ]
 </script>
 
 <style scoped>
+a {
+  color: #0ac18e;
+}
 .selectComponent{
   width: 350px;
   margin:auto;
@@ -60,5 +76,11 @@ const tokensBridge = [
   margin-left: 5px;
   border-radius: 50%;
   vertical-align: center;
+}
+.swapItem{
+  display: flex;
+  justify-content: center;
+  vertical-align: revert;
+  align-items: center;
 }
 </style>

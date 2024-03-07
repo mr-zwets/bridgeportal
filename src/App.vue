@@ -30,13 +30,13 @@
             </template>
           </v-select>
 
-          <div v-if="!walletConnected && selectedToken">
+          <div v-if="!walletConnected && selectedToken" style="color: #222222; font-weight: 700;">
             Connect your metamask wallet to proceed...
           </div>
           <div v-if="walletConnected && selectedToken" class="align-center">
-            <div class="mb-4">status: connected</div>
+            <div class="mb-4" style="color: #222222; font-weight: 700;">status: connected</div>
             <p>First, send your NFTs to the SmartBCH burn address<br/>
-            <code>0x000000000000000000000000000000000000dead</code><br/>
+            <code style="color:#222222">0x000000000000000000000000000000000000dead</code><br/>
             to burn many NFTs at once, use 'bundle transfer' on 
               <a target="_blank" :href="`https://app.withmantra.com/market/collection/${selectedToken.contract}?chain_id=10000`">Mantra</a>
             </p>
@@ -46,10 +46,10 @@
               <a href="https://zapit.io/" target="_blank" className="underline text-blau">Zapit</a>
               or <a href="https://cashonize.com/" target="_blank" className="underline text-blau">Cashonize</a> wallet:
             </p>
-            <v-text-field label="CashTokens Address" v-model="cashTokensAddr" style="width: 350px; margin: auto;"></v-text-field>
+            <v-text-field label="CashTokens Address" v-model="cashTokensAddr" style="width: 350px; margin: auto; color: white"></v-text-field>
           </div>
 
-          <div style="height: 200px;"></div>
+          <div style="height: 100px;"></div>
 
         </v-responsive>
       </v-container>
@@ -58,12 +58,28 @@
 </template>
 
 <script setup lang="ts">
-import {ref} from "vue"
+import { ref, watch } from "vue"
+import { ethers } from "ethers";
 import tokensBridge from "./assets/listTokensBridge.json"
 
 const selectedToken = ref("")
 const walletConnected= ref(false)
 const cashTokensAddr = ref("")
+
+watch(selectedToken, async(oldSelectedToken,newSelectedToken) => {
+  if(!oldSelectedToken && newSelectedToken || !walletConnected) return
+  try{
+    // A Web3Provider wraps a standard Web3 provider, which is
+    // what MetaMask injects as window.ethereum into each page
+    const provider = new ethers.providers.Web3Provider(window.ethereum)
+
+    await provider.send("eth_requestAccounts", []);
+    walletConnected.value = true
+    } catch (error){
+    console.log(error)
+  }
+})
+
 </script>
 
 <style scoped>

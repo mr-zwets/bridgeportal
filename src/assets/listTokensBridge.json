@@ -1,18 +1,21 @@
 [
   {
     "name": "Gambling Apes Club",
+    "plural": "Gambling Apes",
     "image": "/images/gambling-ape.png",
     "contract": "0xc054a7f7866ba73889511c48967be776008eb408",
     "hasStakeOption": false
   },
   {
     "name": "Spice NFT",
+    "plural": "Spice NFTs",
     "image": "/images/spice-nft.jpg",
     "contract": "0x65496F09592883390Df9780964CE04F2e2C07b93",
     "hasStakeOption": true
   },
   {
-    "name": "Punk apes",
+    "name": "Punk Apes",
+    "plural": "Punk Apes",
     "image": "/images/punk-ape.png",
     "contract": "0xf9c0787670908c8c363e2205608bc5f4a6f95e09",
     "hasStakeOption": true

@@ -35,20 +35,24 @@
           </div>
           <div v-if="walletConnected && selectedToken" class="align-center">
             <div class="mb-4" style="color: #222222; font-weight: 700;">status: connected</div>
-            <p>First, send your NFTs to the SmartBCH burn address<br/>
+            <p>First, send your {{ selectedToken.plural }} to the SmartBCH burn address<br/>
             <code style="color:#222222">0x000000000000000000000000000000000000dead</code><br/>
             to burn many NFTs at once, use 'bundle transfer' on 
               <a target="_blank" :href="`https://app.withmantra.com/market/collection/${selectedToken.contract}?chain_id=10000`">Mantra</a>
             </p>
 
-            <p className="mt-4 montserrat">Input a CashTokens receiving address from 
-              <a href="https://www.paytaca.com/" target="_blank" className="underline text-blau">Paytaca</a> ,
-              <a href="https://zapit.io/" target="_blank" className="underline text-blau">Zapit</a>
-              or <a href="https://cashonize.com/" target="_blank" className="underline text-blau">Cashonize</a> wallet:
-            </p>
-            <v-text-field label="CashTokens Address" v-model="cashTokensAddr" style="width: 350px; margin: auto; color: white"></v-text-field>
-          </div>
+            <p v-if="!listToBridge.length" className="mt-4" >Listening for incoming transactions...</p>
+            <div v-else>
+              <p className="mt-4">Your {{ selectedToken.plural }} ready to bridge: {{ listToBridge.map(n => `#${n}`).join(", ") }}</p>
+                <p className="mt-4">Input a CashTokens receiving address from 
+                <a href="https://www.paytaca.com/" target="_blank" className="underline text-blau">Paytaca</a> ,
+                <a href="https://zapit.io/" target="_blank" className="underline text-blau">Zapit</a>
+                or <a href="https://cashonize.com/" target="_blank" className="underline text-blau">Cashonize</a> wallet:
+              </p>
+              <v-text-field label="CashTokens Address" v-model="cashTokensAddr" style="width: 350px; margin: auto; color: white"></v-text-field>
+            </div>
 
+          </div>
           <div style="height: 100px;"></div>
 
         </v-responsive>
@@ -62,11 +66,14 @@ import { ref, watch } from "vue"
 import { ethers } from "ethers";
 import tokensBridge from "./assets/listTokensBridge.json"
 
-const selectedToken = ref("")
+const selectedToken = ref(undefined)
 const walletConnected= ref(false)
 const cashTokensAddr = ref("")
+const listToBridge = ref([] as number[])
 
 watch(selectedToken, async(oldSelectedToken,newSelectedToken) => {
+  // reset list to bridge when changing selected token
+  listToBridge.value = []
   if(!oldSelectedToken && newSelectedToken || !walletConnected) return
   try{
     // A Web3Provider wraps a standard Web3 provider, which is

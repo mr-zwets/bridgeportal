@@ -37,7 +37,10 @@
           <div v-if="connectedAddress && selectedToken" class="align-center mt-3">
             <p>To bridge your {{ selectedToken.plural }}, send them to the SmartBCH burn address<br/>
             <code style="color:#222222">0x000000000000000000000000000000000000dead</code><br/>
-            to burn many NFTs at once, use 'bundle transfer' on 
+            </p>
+            <p v-if="selectedToken.hasStakeOption">If your {{ selectedToken.plural }} are staked, you need to unstake them first</p>
+            <p>
+            To burn many NFTs at once, use 'bundle transfer' on 
               <a target="_blank" :href="`https://app.withmantra.com/market/collection/${selectedToken.contract}?chain_id=10000`">Mantra</a>
             </p>
 

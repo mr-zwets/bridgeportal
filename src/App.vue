@@ -58,8 +58,13 @@
                 <a href="https://zapit.io/" target="_blank" className="underline text-blau">Zapit</a>
                 or <a href="https://cashonize.com/" target="_blank" className="underline text-blau">Cashonize</a> wallet:
               </p>
-              <v-text-field label="CashTokens Address" v-model="cashTokensAddr" style="width: 350px; margin: auto; color: white"></v-text-field>
+              <v-text-field label="CashTokens Address" v-model="cashtokensAddr" class="inputAddr"></v-text-field>
             </div>
+            <div v-if="cashtokensAddr && !isValidAddr" class="text-red">Invalid CashTokens address</div>
+            
+            <v-btn v-if="cashtokensAddr && isValidAddr" class="mt-5" size="large">
+              Bridge Your {{ listToBridge.length }} {{ selectedToken.plural }}
+            </v-btn>
 
           </div>
 
@@ -73,6 +78,7 @@
 import { ref, onMounted, watch } from "vue"
 import { ethers } from "ethers";
 import tokensBridge from "./assets/listTokensBridge.json"
+import {decodeCashAddress} from '@bitauth/libauth'
 
 declare global {
   interface Window{
@@ -94,7 +100,8 @@ const connectedAddress= ref("")
 const connectedBackend = ref("")
 const failedToFetch = ref(false)
 const listToBridge = ref([] as number[])
-const cashTokensAddr = ref("")
+const cashtokensAddr = ref("")
+const isValidAddr = ref(false)
 
 onMounted(async() => {
   try{
@@ -107,6 +114,17 @@ onMounted(async() => {
   } catch (error){
     console.log(error)
   } 
+})
+
+function isTokenAddress(address:string) {
+  const result = decodeCashAddress(address);
+  if (typeof result === 'string') return false;
+  const supportsTokens = (result.type === 'p2pkhWithTokens' || result.type === 'p2shWithTokens');
+  return supportsTokens;
+}
+
+watch(cashtokensAddr, async(newCashtokensAddr) => {
+  isValidAddr.value = isTokenAddress(newCashtokensAddr)
 })
 
 watch(selectedToken, async(newSelectedToken) => {

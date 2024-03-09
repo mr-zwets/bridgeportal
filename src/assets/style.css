@@ -41,6 +41,11 @@ button.connectButton{
   vertical-align: revert;
   align-items: center;
 }
+.inputAddr{
+  width: 350px;
+  margin: auto;
+  color: white
+}
 
 @media (max-width: 600px) {
   button.connectButton{

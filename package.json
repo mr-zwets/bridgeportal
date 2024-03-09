@@ -7,6 +7,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@bitauth/libauth": "^2.1.0",
     "@mdi/font": "7.0.96",
     "ethers": "5.7.2",
     "roboto-fontface": "*",

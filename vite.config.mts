@@ -26,6 +26,17 @@ export default defineConfig({
       },
     }),
   ],
+  esbuild: {
+    supported: {
+      // Browsers can handle top-level-await features.
+      'top-level-await': true
+    },
+  },
+  optimizeDeps: {
+    esbuildOptions: {
+      target: 'esnext',
+    },
+  },
   define: { 'process.env': {} },
   resolve: {
     alias: {

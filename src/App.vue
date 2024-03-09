@@ -3,8 +3,8 @@
     <v-main>
       <v-container class="fill-height">
         <v-responsive class="text-center fill-height">
-          <v-btn style="position: absolute; right: 20px; top: 20px;">{{connectedAddress? "Connected" : "Connect"}}</v-btn>
-          <h1 class="my-5 text-white" style="margin-top: 60px;">Bridge Portal</h1>
+          <v-btn class="connectButton">{{connectedAddress? "Connected" : "Connect"}}</v-btn>
+          <h1 class="text-white" style="margin-top: 60px;">Bridge Portal</h1>
           <hr style="color: white; width: 300px; margin: auto;"><br/>
 
           <div className='my-4' class="swapItem">
@@ -14,7 +14,7 @@
           </div><br/>
 
           <label for="token">Choose which SmartBCH tokens to bridge:</label><br/>
-          <v-select class="selectComponent" id="token" :items="tokensBridge" label="Token" v-model="selectedToken">
+          <v-select class="selectComponent text-black" id="token" :items="tokensBridge" label="Token" v-model="selectedToken">
             <template v-slot:selection="{ item, index }">
               {{item.raw.name}}
               <img class="tokenImage" :src="item.raw.image"/>
@@ -35,6 +35,9 @@
             Connect your metamask wallet to proceed...
           </div>
           <div v-if="connectedAddress && selectedToken" class="align-center mt-3">
+            <div v-if="selectedToken.specialMessage" class="my-3 text-black">
+              <p>{{ selectedToken.specialMessage }}</p>
+            </div>
             <p>To bridge your {{ selectedToken.plural }}, send them to the SmartBCH burn address<br/>
             <code style="color:#222222">0x000000000000000000000000000000000000dead</code><br/>
             </p>
@@ -68,7 +71,21 @@ import { ref, onMounted, watch } from "vue"
 import { ethers } from "ethers";
 import tokensBridge from "./assets/listTokensBridge.json"
 
-const selectedToken = ref(undefined)
+declare global {
+  interface Window{
+    ethereum?:any
+  }
+}
+interface tokenBridge{
+  name: string;
+  plural: string;
+  image: string;
+  contract: string;
+  hasStakeOption: boolean;
+  specialMessage?: string;
+}
+
+const selectedToken = ref(undefined as (tokenBridge | undefined))
 const connectedAddress= ref("")
 const cashTokensAddr = ref("")
 const listToBridge = ref([] as number[])
@@ -108,8 +125,14 @@ watch(selectedToken, async(oldSelectedToken,newSelectedToken) => {
 a {
   color: #0ac18e;
 }
+.connectButton{
+  position: absolute; 
+  right: 20px;
+  top: 20px;
+}
 .selectComponent{
-  width: 350px;
+  max-width: 350px;
+  min-width: fit-content;
   margin:auto;
 }
 .tokenImage{
@@ -123,5 +146,12 @@ a {
   justify-content: center;
   vertical-align: revert;
   align-items: center;
+}
+
+@media (max-width: 600px) {
+  .connectButton{
+    position: relative;
+    margin-left: 60%;
+  }
 }
 </style>

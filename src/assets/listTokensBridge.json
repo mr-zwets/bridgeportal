@@ -4,7 +4,8 @@
     "plural": "Gambling Apes",
     "image": "/images/gambling-ape.png",
     "contract": "0xc054a7f7866ba73889511c48967be776008eb408",
-    "hasStakeOption": true
+    "hasStakeOption": true,
+    "specialMessage": "Your Gambling Apes will get new and improved art upon bridging!"
   },
   {
     "name": "Spice NFT",

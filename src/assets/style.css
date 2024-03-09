@@ -16,3 +16,35 @@ main{
   background-color:teal;
   color: white;
 }
+a {
+  color: #0ac18e;
+}
+button.connectButton{
+  position: absolute; 
+  right: 20px;
+  top: 20px;
+}
+.selectComponent{
+  max-width: 350px;
+  min-width: fit-content;
+  margin:auto;
+}
+.tokenImage{
+  width: 30px;
+  margin-left: 5px;
+  border-radius: 50%;
+  vertical-align: center;
+}
+.swapItem{
+  display: flex;
+  justify-content: center;
+  vertical-align: revert;
+  align-items: center;
+}
+
+@media (max-width: 600px) {
+  button.connectButton{
+    position: relative;
+    margin-left: 60%;
+  }
+}

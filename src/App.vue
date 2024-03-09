@@ -98,6 +98,7 @@ interface tokenBridge{
 }
 
 let provider: any;
+let refreshIntervalId: any;
 const selectedToken = ref(undefined as (tokenBridge | undefined))
 const connectedAddress= ref("")
 const connectedBackend = ref("")
@@ -133,22 +134,28 @@ watch(selectedToken, async(newSelectedToken) => {
   // reset list to bridge when changing selected token
   listToBridge.value = [];
   failedToFetch.value = false;
+  if(refreshIntervalId) clearInterval(refreshIntervalId);
   if(!connectedAddress.value) await connectMetamask()
   if(newSelectedToken && connectedAddress){
     connectedBackend.value = newSelectedToken.backendUrl;
-    try{
-      const rawResponse = await fetch(connectedBackend.value+'/address/'+connectedAddress.value)
-      if(!rawResponse.ok) failedToFetch.value = true
-      const infoAddress = await rawResponse.json();
-
-      const listNftItems = infoAddress.filter((item: any) => !item.timebridged)
-      listToBridge.value = listNftItems.map((item: any) => item.nftnumber)
-    } catch (error){
-      failedToFetch.value = true
-      console.log(error)
-    }
+    await getNftListAddress();
+    refreshIntervalId = setInterval(getNftListAddress, 5000);
   }
 })
+
+async function getNftListAddress(){
+  try{
+    const rawResponse = await fetch(connectedBackend.value+'/address/'+connectedAddress.value)
+    if(!rawResponse.ok) failedToFetch.value = true
+    const infoAddress = await rawResponse.json();
+
+    const listNftItems = infoAddress.filter((item: any) => !item.timebridged)
+    listToBridge.value = listNftItems.map((item: any) => item.nftnumber)
+  } catch (error){
+    failedToFetch.value = true
+    console.log(error)
+  }
+}
 
 async function connectMetamask(){
   if(!provider){

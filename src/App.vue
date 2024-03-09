@@ -47,7 +47,10 @@
               <a target="_blank" :href="`https://app.withmantra.com/market/collection/${selectedToken.contract}?chain_id=10000`">Mantra</a>
             </p>
 
-            <p v-if="!listToBridge.length" className="mt-7" style="color:#222222; font-weight: 700;">Listening for incoming transactions...</p>
+            <div v-if="!listToBridge.length" className="mt-7" style="color:#222222; font-weight: 700;">
+              <p v-if="!failedToFetch">Listening for incoming transactions...</p>
+              <p v-else>Failed to connect to bridging backend</p>
+            </div>
             <div v-else>
               <p className="mt-4 text-black">Your {{ selectedToken.plural }} ready to bridge: {{ listToBridge.map(n => `#${n}`).join(", ") }}</p>
                 <p className="mt-4">Input a CashTokens receiving address from 
@@ -89,8 +92,9 @@ interface tokenBridge{
 const selectedToken = ref(undefined as (tokenBridge | undefined))
 const connectedAddress= ref("")
 const connectedBackend = ref("")
-const cashTokensAddr = ref("")
+const failedToFetch = ref(false)
 const listToBridge = ref([] as number[])
+const cashTokensAddr = ref("")
 
 onMounted(async() => {
   try{
@@ -108,6 +112,7 @@ onMounted(async() => {
 watch(selectedToken, async(newSelectedToken) => {
   // reset list to bridge when changing selected token
   listToBridge.value = [];
+  failedToFetch.value = false;
   if(!connectedAddress.value){
     try{
       // A Web3Provider wraps a standard Web3 provider, which is
@@ -122,12 +127,17 @@ watch(selectedToken, async(newSelectedToken) => {
   }
   if(newSelectedToken){
     connectedBackend.value = newSelectedToken.backendUrl;
-    const rawResponse = await fetch(connectedBackend.value+'/address/'+connectedAddress.value)
-    //if(!rawResponse.ok) 
-    const infoAddress = await rawResponse.json();
+    try{
+      const rawResponse = await fetch(connectedBackend.value+'/address/'+connectedAddress.value)
+      if(!rawResponse.ok) failedToFetch.value = true
+      const infoAddress = await rawResponse.json();
 
-    const listNftItems = infoAddress.filter((item: any) => !item.timebridged)
-    listToBridge.value = listNftItems.map((item: any) => item.nftnumber)
+      const listNftItems = infoAddress.filter((item: any) => !item.timebridged)
+      listToBridge.value = listNftItems.map((item: any) => item.nftnumber)
+    } catch (error){
+      failedToFetch.value = true
+      console.log(error)
+    }
   }
 })
 

@@ -3,7 +3,9 @@
     <v-main>
       <v-container class="fill-height">
         <v-responsive class="text-center fill-height">
-          <v-btn class="connectButton">{{connectedAddress? "Connected" : "Connect"}}</v-btn>
+          <v-btn class="connectButton" @click="connectMetamask">
+            {{ connectedAddress? "Connected" : "Connect" }}
+          </v-btn>
           <h1 class="text-white" style="margin-top: 60px;">Bridge Portal</h1>
           <hr style="color: white; width: 300px; margin: auto;"><br/>
 
@@ -62,7 +64,7 @@
             </div>
             <div v-if="cashtokensAddr && !isValidAddr" class="text-red">Invalid CashTokens address</div>
             
-            <v-btn v-if="cashtokensAddr && isValidAddr" class="mt-5" size="large" @click="bridgeNfts()">
+            <v-btn v-if="cashtokensAddr && isValidAddr" class="mt-5" size="large" @click="bridgeNfts">
               Bridge Your {{ listToBridge.length }} {{ selectedToken.plural }}
             </v-btn>
 
@@ -95,6 +97,7 @@ interface tokenBridge{
   backendUrl: string;
 }
 
+let provider: any;
 const selectedToken = ref(undefined as (tokenBridge | undefined))
 const connectedAddress= ref("")
 const connectedBackend = ref("")
@@ -103,12 +106,11 @@ const listToBridge = ref([] as number[])
 const cashtokensAddr = ref("")
 const isValidAddr = ref(false)
 
-// A Web3Provider wraps a standard Web3 provider, which is
-// what MetaMask injects as window.ethereum into each page
-const provider = new ethers.providers.Web3Provider(window.ethereum)
-
 onMounted(async() => {
   try{
+    // A Web3Provider wraps a standard Web3 provider, which is
+    // what MetaMask injects as window.ethereum into each page
+    provider = new ethers.providers.Web3Provider(window.ethereum)
     const listAddresses = await provider.send("eth_accounts", []);
     if(listAddresses.length) connectedAddress.value = ethers.utils.getAddress(listAddresses[0]);
   } catch (error){
@@ -131,15 +133,8 @@ watch(selectedToken, async(newSelectedToken) => {
   // reset list to bridge when changing selected token
   listToBridge.value = [];
   failedToFetch.value = false;
-  if(!connectedAddress.value){
-    try{
-      const listAddresses = await provider.send("eth_requestAccounts", []);
-      connectedAddress.value = ethers.utils.getAddress(listAddresses[0]);
-    } catch (error){
-      console.log(error)
-    }  
-  }
-  if(newSelectedToken){
+  if(!connectedAddress.value) await connectMetamask()
+  if(newSelectedToken && connectedAddress){
     connectedBackend.value = newSelectedToken.backendUrl;
     try{
       const rawResponse = await fetch(connectedBackend.value+'/address/'+connectedAddress.value)
@@ -154,6 +149,19 @@ watch(selectedToken, async(newSelectedToken) => {
     }
   }
 })
+
+async function connectMetamask(){
+  if(!provider){
+    alert("Need Metamask installed to connect.")
+    return
+  }
+  try{
+      const listAddresses = await provider.send("eth_requestAccounts", []);
+      connectedAddress.value = ethers.utils.getAddress(listAddresses[0]);
+    } catch (error){
+      console.log(error)
+    }  
+}
 
 async function bridgeNfts(){
   const signer = provider.getSigner()

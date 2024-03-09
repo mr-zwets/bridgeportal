@@ -49,7 +49,7 @@
 
             <p v-if="!listToBridge.length" className="mt-7" style="color:#222222; font-weight: 700;">Listening for incoming transactions...</p>
             <div v-else>
-              <p className="mt-4">Your {{ selectedToken.plural }} ready to bridge: {{ listToBridge.map(n => `#${n}`).join(", ") }}</p>
+              <p className="mt-4 text-black">Your {{ selectedToken.plural }} ready to bridge: {{ listToBridge.map(n => `#${n}`).join(", ") }}</p>
                 <p className="mt-4">Input a CashTokens receiving address from 
                 <a href="https://www.paytaca.com/" target="_blank" className="underline text-blau">Paytaca</a> ,
                 <a href="https://zapit.io/" target="_blank" className="underline text-blau">Zapit</a>
@@ -83,10 +83,12 @@ interface tokenBridge{
   contract: string;
   hasStakeOption: boolean;
   specialMessage?: string;
+  backendUrl: string;
 }
 
 const selectedToken = ref(undefined as (tokenBridge | undefined))
 const connectedAddress= ref("")
+const connectedBackend = ref("")
 const cashTokensAddr = ref("")
 const listToBridge = ref([] as number[])
 
@@ -97,25 +99,35 @@ onMounted(async() => {
     const provider = new ethers.providers.Web3Provider(window.ethereum)
 
     const listAddresses = await provider.send("eth_accounts", []);
-    if(listAddresses.length) connectedAddress.value = listAddresses[0];
+    if(listAddresses.length) connectedAddress.value = ethers.utils.getAddress(listAddresses[0]);
   } catch (error){
     console.log(error)
   } 
 })
 
-watch(selectedToken, async(oldSelectedToken,newSelectedToken) => {
+watch(selectedToken, async(newSelectedToken) => {
   // reset list to bridge when changing selected token
-  listToBridge.value = []
-  if(!oldSelectedToken && newSelectedToken || !connectedAddress) return
-  try{
-    // A Web3Provider wraps a standard Web3 provider, which is
-    // what MetaMask injects as window.ethereum into each page
-    const provider = new ethers.providers.Web3Provider(window.ethereum)
+  listToBridge.value = [];
+  if(!connectedAddress.value){
+    try{
+      // A Web3Provider wraps a standard Web3 provider, which is
+      // what MetaMask injects as window.ethereum into each page
+      const provider = new ethers.providers.Web3Provider(window.ethereum)
 
-    const listAddresses = await provider.send("eth_requestAccounts", []);
-    connectedAddress.value = listAddresses[0];
-  } catch (error){
-    console.log(error)
+      const listAddresses = await provider.send("eth_requestAccounts", []);
+      connectedAddress.value = ethers.utils.getAddress(listAddresses[0]);
+    } catch (error){
+      console.log(error)
+    }  
+  }
+  if(newSelectedToken){
+    connectedBackend.value = newSelectedToken.backendUrl;
+    const rawResponse = await fetch(connectedBackend.value+'/address/'+connectedAddress.value)
+    //if(!rawResponse.ok) 
+    const infoAddress = await rawResponse.json();
+
+    const listNftItems = infoAddress.filter((item: any) => !item.timebridged)
+    listToBridge.value = listNftItems.map((item: any) => item.nftnumber)
   }
 })
 

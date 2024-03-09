@@ -5,20 +5,31 @@
     "image": "/images/gambling-ape.png",
     "contract": "0xc054a7f7866ba73889511c48967be776008eb408",
     "hasStakeOption": true,
-    "specialMessage": "Your Gambling Apes will get new and improved art upon bridging!"
+    "specialMessage": "Your Gambling Apes will get new and improved art upon bridging!",
+    "backendUrl": ""
   },
   {
     "name": "Spice NFT",
     "plural": "Spice NFTs",
     "image": "/images/spice-nft.jpg",
     "contract": "0x65496F09592883390Df9780964CE04F2e2C07b93",
-    "hasStakeOption": true
+    "hasStakeOption": true,
+    "backendUrl": ""
   },
   {
     "name": "Punk Apes",
     "plural": "Punk Apes",
     "image": "/images/punk-ape.png",
     "contract": "0xf9c0787670908c8c363e2205608bc5f4a6f95e09",
-    "hasStakeOption": false
+    "hasStakeOption": false,
+    "backendUrl": ""
+  },
+  {
+    "name": "Reapers",
+    "plural": "Reapers",
+    "image": "/images/reaper.png",
+    "contract": "0x48973dbAC0d46B939CD12A7250eFBA965e8a8cf2",
+    "hasStakeOption": false,
+    "backendUrl": "https://api.reapers.cash"
   }
 ]

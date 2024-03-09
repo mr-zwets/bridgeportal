@@ -62,7 +62,7 @@
             </div>
             <div v-if="cashtokensAddr && !isValidAddr" class="text-red">Invalid CashTokens address</div>
             
-            <v-btn v-if="cashtokensAddr && isValidAddr" class="mt-5" size="large">
+            <v-btn v-if="cashtokensAddr && isValidAddr" class="mt-5" size="large" @click="bridgeNfts()">
               Bridge Your {{ listToBridge.length }} {{ selectedToken.plural }}
             </v-btn>
 
@@ -103,12 +103,12 @@ const listToBridge = ref([] as number[])
 const cashtokensAddr = ref("")
 const isValidAddr = ref(false)
 
+// A Web3Provider wraps a standard Web3 provider, which is
+// what MetaMask injects as window.ethereum into each page
+const provider = new ethers.providers.Web3Provider(window.ethereum)
+
 onMounted(async() => {
   try{
-    // A Web3Provider wraps a standard Web3 provider, which is
-    // what MetaMask injects as window.ethereum into each page
-    const provider = new ethers.providers.Web3Provider(window.ethereum)
-
     const listAddresses = await provider.send("eth_accounts", []);
     if(listAddresses.length) connectedAddress.value = ethers.utils.getAddress(listAddresses[0]);
   } catch (error){
@@ -133,10 +133,6 @@ watch(selectedToken, async(newSelectedToken) => {
   failedToFetch.value = false;
   if(!connectedAddress.value){
     try{
-      // A Web3Provider wraps a standard Web3 provider, which is
-      // what MetaMask injects as window.ethereum into each page
-      const provider = new ethers.providers.Web3Provider(window.ethereum)
-
       const listAddresses = await provider.send("eth_requestAccounts", []);
       connectedAddress.value = ethers.utils.getAddress(listAddresses[0]);
     } catch (error){
@@ -158,5 +154,27 @@ watch(selectedToken, async(newSelectedToken) => {
     }
   }
 })
+
+async function bridgeNfts(){
+  const signer = provider.getSigner()
+  const signature = await signer.signMessage(cashtokensAddr.value);
+  const rawResponse = await fetch(connectedBackend.value+'/signbridging', {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      signature, 
+      sbchOriginAddress:connectedAddress.value,
+      destinationAddress:cashtokensAddr.value
+    })
+  });
+  const { txid } = await rawResponse.json();
+  alert("bridging transaction succesfull, txid: " + txid);
+  console.log("bridging transaction succesfull, txid: " + txid)
+  listToBridge.value = []
+  cashtokensAddr.value = ""
+}
 
 </script>

@@ -87,19 +87,21 @@ declare global {
     ethereum?:any
   }
 }
-interface tokenBridge{
-  name: string;
-  plural: string;
-  image: string;
-  contract: string;
-  hasStakeOption: boolean;
-  specialMessage?: string;
-  backendUrl: string;
+interface nftInfoBackend{
+  id: number;
+  timeburned: string;
+  txidsmartbch: string;
+  sbchoriginaddress: string;
+  nftnumber: number;
+  timebridged?: string;
+  txidbch?: string;
+  destinationaddress?: string;
+  signatureproof?: string;
 }
 
-let provider: any;
-let refreshIntervalId: any;
-const selectedToken = ref(undefined as (tokenBridge | undefined))
+let provider: ethers.providers.Web3Provider;
+let refreshIntervalId: NodeJS.Timeout;
+const selectedToken = ref(undefined as (typeof tokensBridge[0] | undefined))
 const connectedAddress= ref("")
 const connectedBackend = ref("")
 const failedToFetch = ref(false)
@@ -147,10 +149,10 @@ async function getNftListAddress(){
   try{
     const rawResponse = await fetch(connectedBackend.value+'/address/'+connectedAddress.value)
     if(!rawResponse.ok) failedToFetch.value = true
-    const infoAddress = await rawResponse.json();
+    const infoAddress: nftInfoBackend[] = await rawResponse.json();
 
-    const listNftItems = infoAddress.filter((item: any) => !item.timebridged)
-    listToBridge.value = listNftItems.map((item: any) => item.nftnumber)
+    const listNftItems = infoAddress.filter((item: nftInfoBackend) => !item.timebridged)
+    listToBridge.value = listNftItems.map((item: nftInfoBackend) => item.nftnumber)
   } catch (error){
     failedToFetch.value = true
     console.log(error)

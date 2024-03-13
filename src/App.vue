@@ -13,7 +13,14 @@
             <a href="https://smartbch.org/" target="_blank"><img src="/images/smartbch.png" alt="smartbch" className="smartbch" style="margin-top:0px"/></a>
             ➔
             <a href="https://bitcoincash.org/" target="_blank"><img src="/images/bitcoin-cash-logo-horizontal-wt.svg" alt="BCH" className="bch" style="margin-top:0px; margin-left: 10px;"/></a>
-          </div><br/>
+          </div>
+
+          <p class="text-black my-4">
+            <strong>Note:</strong> bridging to CashTokens is one-way only<br/>
+              CashTokens supporting wallets: <a href="https://www.paytaca.com/" target="_blank" className="underline text-blau">Paytaca</a> ,
+                <a href="https://zapit.io/" target="_blank" className="underline text-blau">Zapit</a>
+                and <a href="https://cashonize.com/" target="_blank" className="underline text-blau">Cashonize</a>
+          </p>
 
           <label for="token">Choose which SmartBCH tokens to bridge:</label><br/>
           <v-select class="selectComponent text-black" id="token" :items="tokensBridge" label="Token" v-model="selectedToken">
@@ -55,10 +62,7 @@
             </div>
             <div v-else>
               <p className="mt-4 text-black">Your {{ selectedToken.plural }} ready to bridge: {{ listToBridge.map(n => `#${n}`).join(", ") }}</p>
-                <p className="mt-4">Input a CashTokens receiving address from 
-                <a href="https://www.paytaca.com/" target="_blank" className="underline text-blau">Paytaca</a> ,
-                <a href="https://zapit.io/" target="_blank" className="underline text-blau">Zapit</a>
-                or <a href="https://cashonize.com/" target="_blank" className="underline text-blau">Cashonize</a> wallet:
+                <p className="mt-4">Input a CashTokens receiving address below
               </p>
               <v-text-field label="CashTokens Address" v-model="cashtokensAddr" class="inputAddr"></v-text-field>
             </div>
